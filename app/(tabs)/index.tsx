@@ -12,6 +12,10 @@ type Feature = {
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
   route: string;
+  color: string;
+  colorDark: string;
+  bgColor: string;
+  bgColorDark: string;
 };
 
 const features: Feature[] = [
@@ -19,8 +23,23 @@ const features: Feature[] = [
     id: '1',
     title: 'Live Train Status',
     description: 'Track trains in real-time with current location and delays',
-    icon: 'train-outline',
+    icon: 'pulse-outline',
     route: '/(tabs)/live-status',
+    color: '#1976D2',
+    colorDark: '#64B5F6',
+    bgColor: '#E3F2FD',
+    bgColorDark: '#1A2332',
+  },
+  {
+    id: '7',
+    title: 'Search Train',
+    description: 'Find any train by its name or number',
+    icon: 'search-outline',
+    route: '/(tabs)/search-train',
+    color: '#FF6F00',
+    colorDark: '#FFB74D',
+    bgColor: '#FFF3E0',
+    bgColorDark: '#2A1F0F',
   },
   {
     id: '2',
@@ -28,13 +47,21 @@ const features: Feature[] = [
     description: 'Find all trains originating or passing through any station',
     icon: 'business-outline',
     route: '/(tabs)/trains-by-station',
+    color: '#E85D04',
+    colorDark: '#FFB74D',
+    bgColor: '#FFF3E0',
+    bgColorDark: '#2A1F0F',
   },
   {
     id: '3',
     title: 'Live Station Search',
     description: 'Search trains between stations with time windows',
-    icon: 'search-outline',
+    icon: 'train-outline',
     route: '/(tabs)/live-station',
+    color: '#673AB7',
+    colorDark: '#BA68C8',
+    bgColor: '#F3E5F5',
+    bgColorDark: '#2A1A2E',
   },
   {
     id: '4',
@@ -42,6 +69,10 @@ const features: Feature[] = [
     description: 'Check ticket prices with detailed fare breakup',
     icon: 'cash-outline',
     route: '/(tabs)/fare-enquiry',
+    color: '#FF6F00',
+    colorDark: '#FFB74D',
+    bgColor: '#FFF3E0',
+    bgColorDark: '#2A1F0F',
   },
   {
     id: '5',
@@ -49,13 +80,21 @@ const features: Feature[] = [
     description: 'View seat availability for next 7 days with quota details',
     icon: 'accessibility-outline',
     route: '/(tabs)/seat-availability',
+    color: '#009688',
+    colorDark: '#4DB6AC',
+    bgColor: '#E0F2F1',
+    bgColorDark: '#1A2826',
   },
   {
     id: '6',
     title: 'PNR Status',
     description: 'Check your ticket confirmation and passenger details',
-    icon: 'ticket-outline',
+    icon: 'document-text-outline',
     route: '/(tabs)/pnr-status',
+    color: '#D32F2F',
+    colorDark: '#EF5350',
+    bgColor: '#FFEBEE',
+    bgColorDark: '#2A1A1A',
   },
 ];
 
@@ -128,8 +167,8 @@ export default function HomePage() {
               onPress={() => router.push(feature.route as any)}
               activeOpacity={0.7}
             >
-              <View style={[styles.iconContainer, { backgroundColor: primaryBg }]}>
-                <Ionicons name={feature.icon} size={28} color={primaryColor} />
+              <View style={[styles.iconContainer, { backgroundColor: isDark ? feature.bgColorDark : feature.bgColor }]}>
+                <Ionicons name={feature.icon} size={28} color={isDark ? feature.colorDark : feature.color} />
               </View>
               <View style={styles.featureContent}>
                 <Text style={[styles.featureTitle, { color: textColor }]}>{feature.title}</Text>
@@ -137,8 +176,8 @@ export default function HomePage() {
                   {feature.description}
                 </Text>
               </View>
-              <View style={[styles.arrowContainer, { backgroundColor: primaryBg }]}>
-                <Ionicons name="arrow-forward-outline" size={18} color={primaryColor} />
+              <View style={[styles.arrowContainer, { backgroundColor: isDark ? feature.bgColorDark : feature.bgColor }]}>
+                <Ionicons name="arrow-forward-outline" size={18} color={isDark ? feature.colorDark : feature.color} />
               </View>
             </TouchableOpacity>
           ))}

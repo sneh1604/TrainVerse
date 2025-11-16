@@ -282,6 +282,17 @@ export default function TabLayout() {
           headerTitle: getHeaderTitle,
         }}
       />
+      <Tabs.Screen
+        name="search-train"
+        options={{
+          title: 'Search Train',
+          tabBarIcon: ({ color, focused }) => (
+            <HapticTab>
+              <Ionicons name={focused ? 'search' : 'search-outline'} size={24} color={color} />
+            </HapticTab>
+          ),
+        }}
+      />
     </Tabs>
   );
 }
