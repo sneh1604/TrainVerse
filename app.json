@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "KahaHaiTrain",
-    "slug": "KahaHaiTrain",
+    "name": "TrainVerse",
+    "slug": "trainverse",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "kahahaitrain",
+    "scheme": "trainverse",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sneh140.trainverse"
     },
     "web": {
       "output": "static",
@@ -41,6 +42,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e0311ab6-cba6-4263-9158-dd468067505f"
+      }
     }
   }
 }
