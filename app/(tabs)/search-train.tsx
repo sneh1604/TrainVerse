@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type Train = {
   train_number: string;
@@ -47,28 +48,19 @@ export default function SearchTrainScreen() {
   const [usingSampleData, setUsingSampleData] = useState<boolean>(false);
 
   const searchTrain = async () => {
+    if (!query) {
+      setTrains([]);
+      return;
+    }
     try {
       setLoading(true);
       setUsingSampleData(false);
       setTrains([]);
 
-      const response = await fetch(
-        `https://irctc1.p.rapidapi.com/api/v1/searchTrain?query=${query}`,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-host': 'irctc1.p.rapidapi.com',
-            'x-rapidapi-key': '22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474',
-          },
-        }
-      );
-
-      const json = await response.json();
-      if (json.message && json.message.includes("exceeded")) {
-        setTrains(SAMPLE_DATA);
-        setUsingSampleData(true);
-      } else if (json.status && json.data) {
-        setTrains(json.data);
+      const response = await fetchFromRapidAPI(`https://irctc1.p.rapidapi.com/api/v1/searchTrain?query=${query}`);
+      
+      if (response.success && response.data.status && response.data.data) {
+        setTrains(response.data.data);
       } else {
         setTrains(SAMPLE_DATA);
         setUsingSampleData(true);

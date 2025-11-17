@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type RunDays = {
   sun: boolean;
@@ -54,30 +55,18 @@ export default function LiveStationScreen() {
         url += `&toStationCode=${toStation.toUpperCase()}`;
       }
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "x-rapidapi-host": "irctc1.p.rapidapi.com",
-          "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474",
-          "x-rapidapi-ua": "RapidAPI-Playground"
-        }
-      });
+      const response = await fetchFromRapidAPI(url);
 
-      const json = await response.json();
-      console.log("Live Station API Response:", json);
-      
-      if (json.message && json.message.includes("exceeded")) {
-        alert("API quota exceeded. Please try again later or upgrade your plan.");
-        setTrains([]);
-      } else if (json.status && json.data) {
-        setTrains(json.data);
+      if (response.success && response.data.status && response.data.data) {
+        setTrains(response.data.data);
       } else {
-        alert("No trains found for the given criteria");
+        alert("No trains found for the given criteria.");
         setTrains([]);
       }
     } catch (error) {
       console.log(error);
-      alert("Error fetching live station data");
+      alert("Error fetching live station data.");
+      setTrains([]);
     } finally {
       setLoading(false);
     }

@@ -3,7 +3,6 @@ import { Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { HapticTab } from '@/components/haptic-tab';
 import { useTheme } from '@/hooks/useTheme';
 
 function ThemeToggleButton() {
@@ -25,7 +24,7 @@ function MenuButton() {
   const pathname = usePathname();
   const { colors } = useTheme();
 
-  type TabRoute = "/(tabs)" | "/(tabs)/live-status" | "/(tabs)/trains-by-station" | "/(tabs)/live-station" | "/(tabs)/fare-enquiry" | "/(tabs)/seat-availability" | "/(tabs)/pnr-status" | "/(tabs)/explore";
+  type TabRoute = `/(tabs)${"" | "/live-status" | "/trains-by-station" | "/live-station" | "/fare-enquiry" | "/seat-availability" | "/pnr-status" | "/explore" | "/search-train"}`;
 
   const menuItems: {
     name: string;
@@ -82,6 +81,13 @@ function MenuButton() {
       icon: 'ticket-outline',
       color: colors.pnrStatus,
       description: 'Check ticket confirmation'
+    },
+    {
+      name: 'Search Train',
+      route: '/(tabs)/search-train',
+      icon: 'search-outline',
+      color: colors.primary,
+      description: 'Search for a train by name or number'
     },
     { 
       name: 'Explore', 
@@ -180,120 +186,77 @@ export default function TabLayout() {
   };
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.tabIconDefault,
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
-        },
-        headerStyle: {
-          backgroundColor: colors.card,
-          shadowColor: colors.shadow,
-        },
-        headerTintColor: colors.text,
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-        headerLeft: () => <MenuButton />,
-        headerRight: () => <ThemeToggleButton />,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-          headerTitle: getHeaderTitle,
+    <>
+      <Tabs
+        screenOptions={{
+          tabBarStyle: { display: 'none' }, // This will hide the tab bar
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerRight: () => <ThemeToggleButton />,
+          headerLeft: () => <MenuButton />,
         }}
-      />
-      <Tabs.Screen
-        name="live-status"
-        options={{
-          title: 'Live Status',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'train' : 'train-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="trains-by-station"
-        options={{
-          title: 'Stations',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'business' : 'business-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="seat-availability"
-        options={{
-          title: 'Seats',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'accessibility' : 'accessibility-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="pnr-status"
-        options={{
-          title: 'PNR',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'ticket' : 'ticket-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          href: null,
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="live-station"
-        options={{
-          href: null,
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="fare-enquiry"
-        options={{
-          href: null,
-          headerTitle: getHeaderTitle,
-        }}
-      />
-      <Tabs.Screen
-        name="search-train"
-        options={{
-          title: 'Search Train',
-          tabBarIcon: ({ color, focused }) => (
-            <HapticTab>
-              <Ionicons name={focused ? 'search' : 'search-outline'} size={24} color={color} />
-            </HapticTab>
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+          }}
+        />
+        <Tabs.Screen
+          name="search-train"
+          options={{
+            title: 'Search Train',
+          }}
+        />
+        <Tabs.Screen
+          name="live-status"
+          options={{
+            title: 'Live Status',
+          }}
+        />
+        <Tabs.Screen
+          name="trains-by-station"
+          options={{
+            title: 'Trains by Station',
+          }}
+        />
+        <Tabs.Screen
+          name="live-station"
+          options={{
+            title: 'Live Station',
+          }}
+        />
+        <Tabs.Screen
+          name="fare-enquiry"
+          options={{
+            title: 'Fare Enquiry',
+          }}
+        />
+        <Tabs.Screen
+          name="seat-availability"
+          options={{
+            title: 'Seat Availability',
+          }}
+        />
+        <Tabs.Screen
+          name="pnr-status"
+          options={{
+            title: 'PNR Status',
+          }}
+        />
+        <Tabs.Screen
+          name="explore"
+          options={{
+            title: 'Explore',
+          }}
+        />
+      </Tabs>
+    </>
   );
 }
 

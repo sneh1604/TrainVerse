@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type Charges = {
   totalCollectibleAmount: number;
@@ -114,27 +115,12 @@ export default function SeatAvailabilityScreen() {
       setLoading(true);
       setUsingSampleData(false);
 
-      const response = await fetch(
-        `https://irctc1.p.rapidapi.com/api/v2/checkSeatAvailability?classType=${classType}&fromStationCode=${fromStation.toUpperCase()}&quota=${quota}&toStationCode=${toStation.toUpperCase()}&trainNo=${trainNo}`,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "irctc1.p.rapidapi.com",
-            "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474",
-            "x-rapidapi-ua": "RapidAPI-Playground"
-          }
-        }
+      const response = await fetchFromRapidAPI(
+        `https://irctc1.p.rapidapi.com/api/v2/checkSeatAvailability?classType=${classType}&fromStationCode=${fromStation.toUpperCase()}&quota=${quota}&toStationCode=${toStation.toUpperCase()}&trainNo=${trainNo}`
       );
 
-      const json = await response.json();
-      console.log("Seat Availability API Response:", json);
-
-      if (json.message && json.message.includes("exceeded")) {
-        console.log("Using sample data due to quota exceeded");
-        setAvailabilityData(SAMPLE_DATA);
-        setUsingSampleData(true);
-      } else if (json.status && json.data) {
-        setAvailabilityData(json.data);
+      if (response.success && response.data.status && response.data.data) {
+        setAvailabilityData(response.data.data);
         setUsingSampleData(false);
       } else {
         console.log("Using sample data - no valid response");

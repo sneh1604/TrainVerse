@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type Passenger = {
   passengerSerialNumber: number;
@@ -72,25 +73,12 @@ export default function PNRStatusScreen() {
       setLoading(true);
       setUsingSampleData(false);
 
-      const response = await fetch(
-        `https://irctc-indian-railway-pnr-status.p.rapidapi.com/getPNRStatus/${pnrNumber}`,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "irctc-indian-railway-pnr-status.p.rapidapi.com",
-            "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474"
-          }
-        }
+      const response = await fetchFromRapidAPI(
+        `https://irctc-indian-railway-pnr-status.p.rapidapi.com/getPNRStatus/${pnrNumber}`
       );
 
-      const json = await response.json();
-      console.log("PNR API Response:", json);
-
-      if (json.message && json.message.includes("exceeded")) {
-        alert("API quota exceeded. Please try again later.");
-        setPnrData(null);
-      } else if (json.success && json.data) {
-        setPnrData(json.data);
+      if (response.success && response.data.success && response.data.data) {
+        setPnrData(response.data.data);
       } else {
         alert("Invalid PNR number or data not found.");
         setPnrData(null);

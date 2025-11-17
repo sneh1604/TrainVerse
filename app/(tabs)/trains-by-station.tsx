@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type TrainClass = string;
 
@@ -29,26 +30,12 @@ export default function TrainsByStationScreen() {
   const fetchTrainsByStation = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://irctc1.p.rapidapi.com/api/v3/getTrainsByStation?stationCode=${stationCode.toUpperCase()}`,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "irctc1.p.rapidapi.com",
-            "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474",
-            "x-rapidapi-ua": "RapidAPI-Playground"
-          }
-        }
+      const response = await fetchFromRapidAPI(
+        `https://irctc1.p.rapidapi.com/api/v3/getTrainsByStation?stationCode=${stationCode.toUpperCase()}`
       );
 
-      const json = await response.json();
-      console.log("Station API Response:", json);
-      
-      if (json.message && json.message.includes("exceeded")) {
-        alert("API quota exceeded. Please try again later or upgrade your plan.");
-        setStationData(null);
-      } else if (json.status && json.data) {
-        setStationData(json.data);
+      if (response.success && response.data.status && response.data.data) {
+        setStationData(response.data.data);
         setStationName(stationCode.toUpperCase());
       } else {
         alert("No data found for this station code");
@@ -57,6 +44,7 @@ export default function TrainsByStationScreen() {
     } catch (error) {
       console.log(error);
       alert("Error fetching trains by station");
+      setStationData(null);
     } finally {
       setLoading(false);
     }

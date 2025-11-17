@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type NonStop = {
   si_no?: number;
@@ -63,6 +64,7 @@ type TrainData = {
 
 export default function LiveStatusScreen() {
   const [trainNo, setTrainNo] = useState<string>("22955");
+  const [startDay, setStartDay] = useState<number>(0); // 0 for Today, 1 for 1 day ago, etc.
   const [loading, setLoading] = useState<boolean>(false);
   const [trainData, setTrainData] = useState<TrainData | null>(null);
   const { colors, theme } = useTheme();
@@ -72,26 +74,12 @@ export default function LiveStatusScreen() {
   const fetchLiveStatus = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://irctc1.p.rapidapi.com/api/v1/liveTrainStatus?trainNo=${trainNo}&startDay=1`,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "irctc1.p.rapidapi.com",
-            "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474",
-            "x-rapidapi-ua": "RapidAPI-Playground"
-          }
-        }
+      const response = await fetchFromRapidAPI(
+        `https://irctc1.p.rapidapi.com/api/v1/liveTrainStatus?trainNo=${trainNo}&startDay=${startDay}`
       );
 
-      const json = await response.json();
-      console.log("API Response:", json);
-      
-      if (json.message && json.message.includes("exceeded")) {
-        alert("API quota exceeded. Please try again later or upgrade your plan.");
-        setTrainData(null);
-      } else if (json.data) {
-        setTrainData(json.data);
+      if (response.success && response.data.data) {
+        setTrainData(response.data.data);
       } else {
         alert("No data received from server");
         setTrainData(null);
@@ -135,6 +123,26 @@ export default function LiveStatusScreen() {
           keyboardType="numeric"
           placeholderTextColor={colors.placeholder}
         />
+
+        <Text style={[styles.searchLabel, { color: colors.textSecondary, marginTop: 10 }]}>Select Start Day</Text>
+        <View style={styles.daySelector}>
+          {['Today', '1 Day Ago', '2 Days Ago', '3 Days Ago', '4 Days Ago'].map((day, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.dayButton,
+                { backgroundColor: startDay === index ? colors.primary : colors.inputBg },
+              ]}
+              onPress={() => setStartDay(index)}
+            >
+              <Text style={[
+                styles.dayButtonText,
+                { color: startDay === index ? colors.card : colors.text },
+              ]}>{day}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={fetchLiveStatus}>
           <Ionicons name="search-outline" size={20} color={colors.card} />
           <Text style={[styles.buttonText, { color: colors.card }]}>Track Train</Text>
@@ -400,7 +408,24 @@ const styles = StyleSheet.create({
     borderWidth: 1, 
     borderRadius: 10,
     fontSize: 16,
+  },
+  daySelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 12,
+    gap: 5,
+  },
+  dayButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayButtonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   button: {
     paddingVertical: 14,

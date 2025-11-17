@@ -220,7 +220,7 @@ export default function HomePage() {
 
       <View style={styles.footer}>
         <Text style={[styles.footerText, { color: textSecondary }]}>
-          Made with <Ionicons name="heart" size={13} color={colors.error} /> for Indian Railways
+          Made by Sneh for Indian Railways
         </Text>
         <Text style={[styles.footerVersion, { color: textTertiary }]}>
           Version 1.0.0

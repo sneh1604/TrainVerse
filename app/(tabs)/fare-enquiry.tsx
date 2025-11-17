@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { fetchFromRapidAPI } from '../../utils/api';
 
 type FareBreakup = {
   title: string;
@@ -130,28 +131,12 @@ export default function FareEnquiryScreen() {
       setLoading(true);
       setUsingSampleData(false);
       
-      const response = await fetch(
-        `https://irctc1.p.rapidapi.com/api/v2/getFare?trainNo=${trainNo}&fromStationCode=${fromStation.toUpperCase()}&toStationCode=${toStation.toUpperCase()}`,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "irctc1.p.rapidapi.com",
-            "x-rapidapi-key": "22e9b8a2aemsh0912f6a2da48e8cp1e2cc0jsnba91c3220474",
-            "x-rapidapi-ua": "RapidAPI-Playground"
-          }
-        }
+      const response = await fetchFromRapidAPI(
+        `https://irctc1.p.rapidapi.com/api/v2/getFare?trainNo=${trainNo}&fromStationCode=${fromStation.toUpperCase()}&toStationCode=${toStation.toUpperCase()}`
       );
 
-      const json = await response.json();
-      console.log("Fare API Response:", json);
-      
-      if (json.message && json.message.includes("exceeded")) {
-        // Use sample data when quota exceeded
-        console.log("Using sample data due to quota exceeded");
-        setFareData(SAMPLE_FARE_DATA);
-        setUsingSampleData(true);
-      } else if (json.status && json.data) {
-        setFareData(json.data);
+      if (response.success && response.data.status && response.data.data) {
+        setFareData(response.data.data);
         setUsingSampleData(false);
       } else {
         alert("No fare data found. Showing sample data.");
